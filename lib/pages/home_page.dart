@@ -1,6 +1,9 @@
+import 'package:firebase_note_one/main.dart';
 import 'package:firebase_note_one/models/post_model.dart';
 import 'package:firebase_note_one/pages/detail_page.dart';
 import 'package:firebase_note_one/services/auth_service.dart';
+import 'package:firebase_note_one/services/db_service.dart';
+import 'package:firebase_note_one/services/rtdb_service.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,7 +14,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>  with RouteAware{
   bool isLoading = false;
   List<Post> items = [];
 
@@ -22,12 +25,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _getAllPost() async {
-    items = [
-      Post(id: 1, userId: "userId", title: "My first post", content: "This app is connected with Firebase"),
-      Post(id: 2, userId: "userId", title: "My second post", content: "This app is connected with Firebase"),
-      Post(id: 3, userId: "userId", title: "My third post", content: "This app is connected with Firebase"),
-    ];
+    isLoading = true;
+    setState(() {});
 
+    String userId = await DBService.loadUserId() ?? "null";
+    items = await RTDBService.loadPosts(userId);
+
+    isLoading = false;
     setState(() {});
   }
 
@@ -37,6 +41,18 @@ class _HomePageState extends State<HomePage> {
 
   void _openDetailPage() {
     Navigator.pushNamed(context, DetailPage.id);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    MyFirebaseApp.routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void didPopNext() {
+    _getAllPost();
+    super.didPopNext();
   }
 
   @override

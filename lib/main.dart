@@ -17,6 +17,8 @@ Future<void> main() async {
 
 class MyFirebaseApp extends StatelessWidget {
   const MyFirebaseApp({Key? key}) : super(key: key);
+  static final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
 
   Widget _startPage() {
     return StreamBuilder<User?>(
@@ -38,6 +40,7 @@ class MyFirebaseApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "My Firebase App",
+      navigatorObservers: [routeObserver],
       home: _startPage(),
       routes: {
         HomePage.id: (context) => const HomePage(),
