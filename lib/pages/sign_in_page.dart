@@ -40,7 +40,7 @@ class _SignInPageState extends State<SignInPage> {
     if(user != null) {
       debugPrint(user.toString());
       await DBService.saveUserId(user.uid);
-      if(mounted) Navigator.pushReplacementNamed(context, HomePage.id);
+      // if(mounted) Navigator.pushReplacementNamed(context, HomePage.id);
     } else {
       Utils.fireSnackBar("Please check your entered data, Please try again!", context);
     }
@@ -62,68 +62,79 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          padding: const EdgeInsets.all(25),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              // #email
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  hintText: "Email",
-                ),
-                style: const TextStyle(fontSize: 18, color: Colors.black),
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-              ),
-              const SizedBox(height: 20,),
-
-              // #password
-              TextField(
-                controller: passwordController,
-                decoration: const InputDecoration(
-                  hintText: "Password",
-                ),
-                style: const TextStyle(fontSize: 18, color: Colors.black),
-                keyboardType: TextInputType.visiblePassword,
-                textInputAction: TextInputAction.done,
-                obscureText: true,
-              ),
-              const SizedBox(height: 20,),
-
-              // #sign_in
-              ElevatedButton(
-                onPressed: _signIn,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50)
-                ),
-                child: const Text("Sign In", style: TextStyle(fontSize: 16),),
-              ),
-              const SizedBox(height: 20,),
-
-              // #sign_up
-              RichText(
-                text: TextSpan(
-                  style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
-                  children: [
-                    const TextSpan(
-                      text: "Don't have an account?  ",
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              padding: const EdgeInsets.all(25),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // #email
+                  TextField(
+                    controller: emailController,
+                    decoration: const InputDecoration(
+                      hintText: "Email",
                     ),
-                    TextSpan(
-                      style: const TextStyle(color: Colors.blue),
-                      text: "Sign Up",
-                      recognizer: TapGestureRecognizer()..onTap = _goSignUp,
+                    style: const TextStyle(fontSize: 18, color: Colors.black),
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 20,),
+
+                  // #password
+                  TextField(
+                    controller: passwordController,
+                    decoration: const InputDecoration(
+                      hintText: "Password",
                     ),
-                  ]
-                ),
-              )
-            ],
+                    style: const TextStyle(fontSize: 18, color: Colors.black),
+                    keyboardType: TextInputType.visiblePassword,
+                    textInputAction: TextInputAction.done,
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 20,),
+
+                  // #sign_in
+                  ElevatedButton(
+                    onPressed: _signIn,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50)
+                    ),
+                    child: const Text("Sign In", style: TextStyle(fontSize: 16),),
+                  ),
+                  const SizedBox(height: 20,),
+
+                  // #sign_up
+                  RichText(
+                    text: TextSpan(
+                      style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
+                      children: [
+                        const TextSpan(
+                          text: "Don't have an account?  ",
+                        ),
+                        TextSpan(
+                          style: const TextStyle(color: Colors.blue),
+                          text: "Sign Up",
+                          recognizer: TapGestureRecognizer()..onTap = _goSignUp,
+                        ),
+                      ]
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
-        ),
+
+          Visibility(
+            visible: isLoading,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ],
       ),
     );
   }

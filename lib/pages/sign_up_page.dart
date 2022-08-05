@@ -64,93 +64,104 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          padding: const EdgeInsets.all(25),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              padding: const EdgeInsets.all(25),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
 
-              // #firstname
-              TextField(
-                controller: firstnameController,
-                decoration: const InputDecoration(
-                  hintText: "Firstname",
-                ),
-                style: const TextStyle(fontSize: 18, color: Colors.black),
-                keyboardType: TextInputType.name,
-                textInputAction: TextInputAction.next,
+                  // #firstname
+                  TextField(
+                    controller: firstnameController,
+                    decoration: const InputDecoration(
+                      hintText: "Firstname",
+                    ),
+                    style: const TextStyle(fontSize: 18, color: Colors.black),
+                    keyboardType: TextInputType.name,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 20,),
+
+                  // #lastname
+                  TextField(
+                    controller: lastnameController,
+                    decoration: const InputDecoration(
+                      hintText: "Lastname",
+                    ),
+                    style: const TextStyle(fontSize: 18, color: Colors.black),
+                    keyboardType: TextInputType.name,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 20,),
+
+                  // #email
+                  TextField(
+                    controller: emailController,
+                    decoration: const InputDecoration(
+                      hintText: "Email",
+                    ),
+                    style: const TextStyle(fontSize: 18, color: Colors.black),
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 20,),
+
+                  // #password
+                  TextField(
+                    controller: passwordController,
+                    decoration: const InputDecoration(
+                      hintText: "Password",
+                    ),
+                    style: const TextStyle(fontSize: 18, color: Colors.black),
+                    keyboardType: TextInputType.visiblePassword,
+                    textInputAction: TextInputAction.done,
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 20,),
+
+                  // #sign_up
+                  ElevatedButton(
+                    onPressed: _signUp,
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50)
+                    ),
+                    child: const Text("Sign Up", style: TextStyle(fontSize: 16),),
+                  ),
+                  const SizedBox(height: 20,),
+
+                  // #sign_in
+                  RichText(
+                    text: TextSpan(
+                        style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
+                        children: [
+                          const TextSpan(
+                            text: "Already have an account?  ",
+                          ),
+                          TextSpan(
+                            style: const TextStyle(color: Colors.blue),
+                            text: "Sign In",
+                            recognizer: TapGestureRecognizer()..onTap = _goSignIn,
+                          ),
+                        ]
+                    ),
+                  )
+                ],
               ),
-              const SizedBox(height: 20,),
-
-              // #lastname
-              TextField(
-                controller: lastnameController,
-                decoration: const InputDecoration(
-                  hintText: "Lastname",
-                ),
-                style: const TextStyle(fontSize: 18, color: Colors.black),
-                keyboardType: TextInputType.name,
-                textInputAction: TextInputAction.next,
-              ),
-              const SizedBox(height: 20,),
-
-              // #email
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  hintText: "Email",
-                ),
-                style: const TextStyle(fontSize: 18, color: Colors.black),
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-              ),
-              const SizedBox(height: 20,),
-
-              // #password
-              TextField(
-                controller: passwordController,
-                decoration: const InputDecoration(
-                  hintText: "Password",
-                ),
-                style: const TextStyle(fontSize: 18, color: Colors.black),
-                keyboardType: TextInputType.visiblePassword,
-                textInputAction: TextInputAction.done,
-                obscureText: true,
-              ),
-              const SizedBox(height: 20,),
-
-              // #sign_up
-              ElevatedButton(
-                onPressed: _signUp,
-                style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50)
-                ),
-                child: const Text("Sign Up", style: TextStyle(fontSize: 16),),
-              ),
-              const SizedBox(height: 20,),
-
-              // #sign_in
-              RichText(
-                text: TextSpan(
-                    style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
-                    children: [
-                      const TextSpan(
-                        text: "Already have an account?  ",
-                      ),
-                      TextSpan(
-                        style: const TextStyle(color: Colors.blue),
-                        text: "Sign In",
-                        recognizer: TapGestureRecognizer()..onTap = _goSignIn,
-                      ),
-                    ]
-                ),
-              )
-            ],
+            ),
           ),
-        ),
+
+          Visibility(
+            visible: isLoading,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ],
       ),
     );
   }
