@@ -86,6 +86,16 @@ class _HomePageState extends State<HomePage>  with RouteAware{
   Widget _itemOfList(Post post) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      leading: SizedBox(
+        height: 60,
+        width: 60,
+        child: post.image != null
+            ? Image.network(post.image!, fit: BoxFit.cover,)
+            : const Image(
+          image: AssetImage("assets/images/placeholder.jpeg",),
+          fit: BoxFit.cover,
+        ),
+      ),
       title: Text(post.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),),
       subtitle: Text(post.content, style: const TextStyle(fontSize: 18),),
     );

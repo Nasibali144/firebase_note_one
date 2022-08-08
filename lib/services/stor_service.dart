@@ -10,8 +10,8 @@ class StorageService {
     Reference reference = _storage.child(folder).child(imageName);
 
     UploadTask uploadTask = reference.putFile(image);
-
-    String downloadUrl = await uploadTask.snapshot.ref.getDownloadURL();
+    TaskSnapshot taskSnapshot = await uploadTask;
+    String downloadUrl = await taskSnapshot.ref.getDownloadURL();
     return downloadUrl;
   }
 }
