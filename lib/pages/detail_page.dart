@@ -1,8 +1,5 @@
 import 'dart:io';
-import 'dart:math';
-
 import 'package:firebase_note_one/models/post_model.dart';
-import 'package:firebase_note_one/pages/sign_in_page.dart';
 import 'package:firebase_note_one/services/auth_service.dart';
 import 'package:firebase_note_one/services/db_service.dart';
 import 'package:firebase_note_one/services/rtdb_service.dart';
@@ -13,8 +10,11 @@ import 'package:image_picker/image_picker.dart';
 
 class DetailPage extends StatefulWidget {
   static const id = "/detail_page";
+  final DetailState state;
+  final Post? post;
 
-  const DetailPage({Key? key}) : super(key: key);
+  const DetailPage({this.state = DetailState.create, this.post, Key? key})
+      : super(key: key);
 
   @override
   State<DetailPage> createState() => _DetailPageState();
@@ -26,10 +26,28 @@ class _DetailPageState extends State<DetailPage> {
   TextEditingController contentController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   bool isLoading = false;
+  Post? updatePost;
 
   // for image
   final ImagePicker _picker = ImagePicker();
   File? file;
+
+  @override
+  void initState() {
+    super.initState();
+    _detectState();
+  }
+
+  void _detectState() {
+    if (widget.state == DetailState.update && widget.post != null) {
+      updatePost = widget.post;
+      firstnameController.text = updatePost!.firstname;
+      lastnameController.text = updatePost!.lastname;
+      contentController.text = updatePost!.content;
+      dateController.text = updatePost!.date;
+      setState(() {});
+    }
+  }
 
   void _getImage() async {
     var image = await _picker.pickImage(source: ImageSource.gallery);
@@ -50,18 +68,20 @@ class _DetailPageState extends State<DetailPage> {
     String date = dateController.text.trim();
     String? imageUrl;
 
-    if (firstname.isEmpty || content.isEmpty || lastname.isEmpty || date.isEmpty) {
+    if (firstname.isEmpty ||
+        content.isEmpty ||
+        lastname.isEmpty ||
+        date.isEmpty) {
       Utils.fireSnackBar("Please fill all fields", context);
       return;
     }
     isLoading = true;
     setState(() {});
 
-
     String? userId = await DBService.loadUserId();
 
-    if(userId == null) {
-      if(mounted) {
+    if (userId == null) {
+      if (mounted) {
         Navigator.pop(context);
         AuthService.signOutUser(context);
       }
@@ -91,12 +111,12 @@ class _DetailPageState extends State<DetailPage> {
 
   void _selectDate() async {
     await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2122),
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2122),
     ).then((date) {
-      if(date != null) {
+      if (date != null) {
         dateController.text = date.toString();
       }
     });
@@ -107,7 +127,9 @@ class _DetailPageState extends State<DetailPage> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(246, 246, 246, 1),
       appBar: AppBar(
-        title: const Text("Add Post"),
+        title: widget.state == DetailState.update
+            ? const Text("Update Post")
+            : const Text("Add Post"),
         centerTitle: true,
       ),
       body: Stack(
@@ -126,11 +148,17 @@ class _DetailPageState extends State<DetailPage> {
                     child: SizedBox(
                       height: 125,
                       width: 125,
-                      child: file == null
-                          ? const Image(
-                              image: AssetImage("assets/images/logo.png"),
-                            )
-                          : Image.file(file!),
+                      child: widget.state == DetailState.update
+                          ? (updatePost!= null && updatePost!.image != null
+                              ? Image.network(updatePost!.image!)
+                              : const Image(
+                                  image: AssetImage("assets/images/logo.png"),
+                                ))
+                          : (file == null
+                              ? const Image(
+                                  image: AssetImage("assets/images/logo.png"),
+                                )
+                              : Image.file(file!)),
                     ),
                   ),
                   const SizedBox(
@@ -195,14 +223,20 @@ class _DetailPageState extends State<DetailPage> {
                     height: 20,
                   ),
 
-                  // #add
+                  // #add_update
                   ElevatedButton(
-                    onPressed: _addPost,
+                    onPressed: () {
+                      if (widget.state == DetailState.update) {
+                        // Todo write update function
+                      } else {
+                        _addPost();
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 50)),
-                    child: const Text(
-                      "Add",
-                      style: TextStyle(fontSize: 16),
+                    child: Text(
+                      widget.state == DetailState.update ? "Update" : "Add",
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ],
@@ -219,4 +253,9 @@ class _DetailPageState extends State<DetailPage> {
       ),
     );
   }
+}
+
+enum DetailState {
+  create,
+  update,
 }

@@ -10,13 +10,14 @@ import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
   static const id = "/home_page";
+
   const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>  with RouteAware{
+class _HomePageState extends State<HomePage> with RouteAware {
   bool isLoading = false;
   List<Post> items = [];
 
@@ -49,8 +50,8 @@ class _HomePageState extends State<HomePage>  with RouteAware{
     showDialog(
       context: context,
       builder: (context) {
-        if(Platform.isIOS) {
-          return  CupertinoAlertDialog(
+        if (Platform.isIOS) {
+          return CupertinoAlertDialog(
             title: const Text("Delete Post"),
             content: const Text("Do you want to delete this post?"),
             actions: [
@@ -58,7 +59,6 @@ class _HomePageState extends State<HomePage>  with RouteAware{
                 onPressed: () => _deletePost(postKey),
                 child: const Text("Confirm"),
               ),
-
               CupertinoDialogAction(
                 onPressed: _cancel,
                 child: const Text("Cancel"),
@@ -74,7 +74,6 @@ class _HomePageState extends State<HomePage>  with RouteAware{
                 onPressed: () => _deletePost(postKey),
                 child: const Text("Confirm"),
               ),
-
               TextButton(
                 onPressed: _cancel,
                 child: const Text("Cancel"),
@@ -99,10 +98,25 @@ class _HomePageState extends State<HomePage>  with RouteAware{
     _getAllPost();
   }
 
+  void _editPost(Post post) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return DetailPage(
+            state: DetailState.update,
+            post: post,
+          );
+        },
+      ),
+    );
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    MyFirebaseApp.routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+    MyFirebaseApp.routeObserver
+        .subscribe(this, ModalRoute.of(context) as PageRoute);
   }
 
   @override
@@ -124,14 +138,12 @@ class _HomePageState extends State<HomePage>  with RouteAware{
           ),
         ],
       ),
-
       body: ListView.builder(
         itemCount: items.length,
         itemBuilder: (context, index) {
           return _itemOfList(items[index]);
         },
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: _openDetailPage,
         child: const Icon(Icons.add),
@@ -142,6 +154,7 @@ class _HomePageState extends State<HomePage>  with RouteAware{
   Widget _itemOfList(Post post) {
     return GestureDetector(
       onLongPress: () => _deleteDialog(post.postKey),
+      onDoubleTap: () => _editPost(post),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Column(
@@ -151,16 +164,32 @@ class _HomePageState extends State<HomePage>  with RouteAware{
               height: 250,
               width: double.infinity,
               child: post.image != null
-                  ? Image.network(post.image!, fit: BoxFit.cover,)
+                  ? Image.network(
+                      post.image!,
+                      fit: BoxFit.cover,
+                    )
                   : const Image(
-                image: AssetImage("assets/images/placeholder.jpeg",),
-                fit: BoxFit.cover,
-              ),
+                      image: AssetImage(
+                        "assets/images/placeholder.jpeg",
+                      ),
+                      fit: BoxFit.cover,
+                    ),
             ),
-            const SizedBox(height: 5,),
-            Text("${post.firstname} ${post.lastname}", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),),
-            Text(post.date, style: const TextStyle(fontSize: 18),),
-            Text(post.content, style: const TextStyle(fontSize: 18),),
+            const SizedBox(
+              height: 5,
+            ),
+            Text(
+              "${post.firstname} ${post.lastname}",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+            Text(
+              post.date,
+              style: const TextStyle(fontSize: 18),
+            ),
+            Text(
+              post.content,
+              style: const TextStyle(fontSize: 18),
+            ),
           ],
         ),
       ),
