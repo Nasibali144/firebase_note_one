@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:firebase_note_one/main.dart';
 import 'package:firebase_note_one/models/post_model.dart';
 import 'package:firebase_note_one/pages/detail_page.dart';
 import 'package:firebase_note_one/services/auth_service.dart';
 import 'package:firebase_note_one/services/db_service.dart';
 import 'package:firebase_note_one/services/rtdb_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -41,6 +43,60 @@ class _HomePageState extends State<HomePage>  with RouteAware{
 
   void _openDetailPage() {
     Navigator.pushNamed(context, DetailPage.id);
+  }
+
+  void _deleteDialog(String postKey) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        if(Platform.isIOS) {
+          return  CupertinoAlertDialog(
+            title: const Text("Delete Post"),
+            content: const Text("Do you want to delete this post?"),
+            actions: [
+              CupertinoDialogAction(
+                onPressed: () => _deletePost(postKey),
+                child: const Text("Confirm"),
+              ),
+
+              CupertinoDialogAction(
+                onPressed: _cancel,
+                child: const Text("Cancel"),
+              ),
+            ],
+          );
+        } else {
+          return AlertDialog(
+            title: const Text("Delete Post"),
+            content: const Text("Do you want to delete this post?"),
+            actions: [
+              TextButton(
+                onPressed: () => _deletePost(postKey),
+                child: const Text("Confirm"),
+              ),
+
+              TextButton(
+                onPressed: _cancel,
+                child: const Text("Cancel"),
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  void _cancel() {
+    Navigator.pop(context);
+  }
+
+  void _deletePost(String postKey) async {
+    Navigator.pop(context);
+    isLoading = true;
+    setState(() {});
+
+    await RTDBService.deletePost(postKey);
+    _getAllPost();
   }
 
   @override
@@ -84,20 +140,30 @@ class _HomePageState extends State<HomePage>  with RouteAware{
   }
 
   Widget _itemOfList(Post post) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      leading: SizedBox(
-        height: 60,
-        width: 60,
-        child: post.image != null
-            ? Image.network(post.image!, fit: BoxFit.cover,)
-            : const Image(
-          image: AssetImage("assets/images/placeholder.jpeg",),
-          fit: BoxFit.cover,
+    return GestureDetector(
+      onLongPress: () => _deleteDialog(post.postKey),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 250,
+              width: double.infinity,
+              child: post.image != null
+                  ? Image.network(post.image!, fit: BoxFit.cover,)
+                  : const Image(
+                image: AssetImage("assets/images/placeholder.jpeg",),
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 5,),
+            Text("${post.firstname} ${post.lastname}", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),),
+            Text(post.date, style: const TextStyle(fontSize: 18),),
+            Text(post.content, style: const TextStyle(fontSize: 18),),
+          ],
         ),
       ),
-      title: Text(post.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),),
-      subtitle: Text(post.content, style: const TextStyle(fontSize: 18),),
     );
   }
 }

@@ -7,7 +7,9 @@ class RTDBService {
   static final database = FirebaseDatabase.instance.ref();
 
   static Future<Stream<DatabaseEvent>> storePost(Post post) async {
-    await database.child("posts").push().set(post.toJson());
+    String? key = database.child("posts").push().key;
+    post.postKey = key!;
+    await database.child("posts").child(post.postKey).set(post.toJson());
     return database.onChildAdded;
   }
 
@@ -24,5 +26,9 @@ class RTDBService {
     }
 
     return items;
+  }
+
+  static Future<void> deletePost(String postKey) async {
+    await database.child("posts").child(postKey).remove();
   }
 }
