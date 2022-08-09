@@ -31,4 +31,9 @@ class RTDBService {
   static Future<void> deletePost(String postKey) async {
     await database.child("posts").child(postKey).remove();
   }
+
+  static Future<Stream<DatabaseEvent>> updatePost(Post post) async {
+    await database.child("posts").child(post.postKey).set(post.toJson());
+    return database.onChildAdded;
+  }
 }

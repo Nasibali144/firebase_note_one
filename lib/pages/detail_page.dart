@@ -109,6 +109,44 @@ class _DetailPageState extends State<DetailPage> {
     setState(() {});
   }
 
+  void _updatePost() async {
+    String firstname = firstnameController.text.trim();
+    String lastname = lastnameController.text.trim();
+    String content = contentController.text.trim();
+    String date = dateController.text.trim();
+    String? imageUrl;
+
+    if (firstname.isEmpty ||
+        content.isEmpty ||
+        lastname.isEmpty ||
+        date.isEmpty) {
+      Utils.fireSnackBar("Please fill all fields", context);
+      return;
+    }
+    isLoading = true;
+    setState(() {});
+
+    if (file != null) {
+      imageUrl = await StorageService.uploadImage(file!);
+    }
+
+    Post post = Post(
+        postKey: updatePost!.postKey,
+        userId: updatePost!.userId,
+        firstname: firstname,
+        lastname: lastname,
+        date: date,
+        content: content,
+        image: imageUrl);
+
+    await RTDBService.updatePost(post).then((value) {
+      Navigator.of(context).pop();
+    });
+
+    isLoading = false;
+    setState(() {});
+  }
+
   void _selectDate() async {
     await showDatePicker(
       context: context,
@@ -148,12 +186,10 @@ class _DetailPageState extends State<DetailPage> {
                     child: SizedBox(
                       height: 125,
                       width: 125,
-                      child: widget.state == DetailState.update
-                          ? (updatePost!= null && updatePost!.image != null
-                              ? Image.network(updatePost!.image!)
-                              : const Image(
-                                  image: AssetImage("assets/images/logo.png"),
-                                ))
+                      child: (updatePost != null &&
+                              updatePost!.image != null &&
+                              file == null)
+                          ? Image.network(updatePost!.image!)
                           : (file == null
                               ? const Image(
                                   image: AssetImage("assets/images/logo.png"),
@@ -227,7 +263,7 @@ class _DetailPageState extends State<DetailPage> {
                   ElevatedButton(
                     onPressed: () {
                       if (widget.state == DetailState.update) {
-                        // Todo write update function
+                        _updatePost();
                       } else {
                         _addPost();
                       }
