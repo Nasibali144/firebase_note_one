@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_note_one/pages/detail_page.dart';
 import 'package:firebase_note_one/pages/home_page.dart';
 import 'package:firebase_note_one/pages/sign_in_page.dart';
@@ -12,7 +15,14 @@ import 'package:flutter/material.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyFirebaseApp());
+
+
+  await runZonedGuarded(() async {
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    runApp(const MyFirebaseApp());
+  }, (error, stackTrace) {
+    FirebaseCrashlytics.instance.recordError(error, stackTrace);
+  });
 }
 
 class MyFirebaseApp extends StatelessWidget {

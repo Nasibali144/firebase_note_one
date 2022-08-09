@@ -137,7 +137,7 @@ class _DetailPageState extends State<DetailPage> {
         lastname: lastname,
         date: date,
         content: content,
-        image: imageUrl);
+        image: imageUrl ?? updatePost!.image);
 
     await RTDBService.updatePost(post).then((value) {
       Navigator.of(context).pop();

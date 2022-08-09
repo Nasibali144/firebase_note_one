@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_note_one/main.dart';
 import 'package:firebase_note_one/models/post_model.dart';
 import 'package:firebase_note_one/pages/detail_page.dart';
@@ -43,7 +44,9 @@ class _HomePageState extends State<HomePage> with RouteAware {
   }
 
   void _openDetailPage() {
-    Navigator.pushNamed(context, DetailPage.id);
+    // FirebaseCrashlytics.instance.crash();
+    throw Exception("Flutter B17 Erroor case");
+    // Navigator.pushNamed(context, DetailPage.id);
   }
 
   void _deleteDialog(String postKey) async {
