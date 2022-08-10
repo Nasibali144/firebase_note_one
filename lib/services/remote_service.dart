@@ -16,11 +16,11 @@ class RemoteService {
 
   static Future<void> initConfig() async {
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
-      fetchTimeout: const Duration(seconds: 10),
+      fetchTimeout: const Duration(seconds: 20),
       // a fetch will wait up to 10 seconds before timing out
       minimumFetchInterval: const Duration(
           seconds:
-              10), // fetch parameters will be cached for a maximum of 1 hour
+              20), // fetch parameters will be cached for a maximum of 1 hour
     ));
 
     await remoteConfig.setDefaults(const {

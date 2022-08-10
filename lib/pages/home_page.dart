@@ -7,6 +7,7 @@ import 'package:firebase_note_one/services/db_service.dart';
 import 'package:firebase_note_one/services/remote_service.dart';
 import 'package:firebase_note_one/services/rtdb_service.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -26,6 +27,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
   void initState() {
     super.initState();
     _getAllPost();
+    testDebug();
   }
 
   void _getAllPost() async {
@@ -116,6 +118,26 @@ class _HomePageState extends State<HomePage> with RouteAware {
         },
       ),
     );
+  }
+
+  void testDebug() {
+    int n = 10;
+    List list = [];
+    for(int i = 0; i <= n; i++){
+      list.add(fib(i));
+    }
+    if (kDebugMode) {
+      print(list);
+    }
+  }
+
+
+  int fib(int n) {
+    if (n == 0 || n == 1) {
+      return n;
+    }
+    if (n > 1) return fib(n - 1) + fib(n - 2);
+    return 0;
   }
 
   @override
