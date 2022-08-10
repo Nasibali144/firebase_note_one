@@ -16,8 +16,8 @@ class RTDBService {
   static Future<List<Post>> loadPosts(String id) async {
     List<Post> items = [];
     Query query = database.child("posts").orderByChild("userId").equalTo(id);
-    var snapshot = await query.once();
-    var result = snapshot.snapshot.children;
+    DatabaseEvent databaseEvent = await query.once();
+    var result = databaseEvent.snapshot.children;
 
     for(DataSnapshot item in result) {
       if(item.value != null) {

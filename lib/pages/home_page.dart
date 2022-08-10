@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_note_one/main.dart';
 import 'package:firebase_note_one/models/post_model.dart';
 import 'package:firebase_note_one/pages/detail_page.dart';
 import 'package:firebase_note_one/services/auth_service.dart';
 import 'package:firebase_note_one/services/db_service.dart';
+import 'package:firebase_note_one/services/remote_service.dart';
 import 'package:firebase_note_one/services/rtdb_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +35,9 @@ class _HomePageState extends State<HomePage> with RouteAware {
     String userId = await DBService.loadUserId() ?? "null";
     items = await RTDBService.loadPosts(userId);
 
+    // remote config
+    await RemoteService.initConfig();
+
     isLoading = false;
     setState(() {});
   }
@@ -45,8 +48,8 @@ class _HomePageState extends State<HomePage> with RouteAware {
 
   void _openDetailPage() {
     // FirebaseCrashlytics.instance.crash();
-    throw Exception("Flutter B17 Erroor case");
-    // Navigator.pushNamed(context, DetailPage.id);
+    // throw Exception("Flutter B17 Erroor case");
+    Navigator.pushNamed(context, DetailPage.id);
   }
 
   void _deleteDialog(String postKey) async {
@@ -132,6 +135,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: RemoteService.availableBackgroundColors[RemoteService.backgroundColor],
         title: const Text("All Post"),
         centerTitle: true,
         actions: [
@@ -148,6 +152,7 @@ class _HomePageState extends State<HomePage> with RouteAware {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: RemoteService.availableBackgroundColors[RemoteService.backgroundColor],
         onPressed: _openDetailPage,
         child: const Icon(Icons.add),
       ),

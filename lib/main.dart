@@ -29,7 +29,6 @@ class MyFirebaseApp extends StatelessWidget {
   const MyFirebaseApp({Key? key}) : super(key: key);
   static final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
-
   Widget _startPage() {
     return StreamBuilder<User?>(
       stream: AuthService.auth.authStateChanges(),

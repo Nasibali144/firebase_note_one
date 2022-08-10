@@ -19,12 +19,15 @@ dependencies:
   firebase_database: ^9.1.0
   firebase_storage: ^10.3.4
   firebase_crashlytics: ^2.8.6
+  firebase_remote_config: ^2.0.13
+  firebase_analytics: ^9.3.0
 
   # storage
   shared_preferences: ^2.0.15
 
   # image
   image_picker: ^0.8.5+3
+
 
 dev_dependencies:
   flutter_test:
